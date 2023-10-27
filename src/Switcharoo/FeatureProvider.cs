@@ -1,6 +1,6 @@
 using Switcharoo.Interfaces;
-using Switcharoo.Model;
-using Environment = Switcharoo.Model.Environment;
+using Switcharoo.Entities;
+using Environment = Switcharoo.Entities.Environment;
 
 namespace Switcharoo;
 

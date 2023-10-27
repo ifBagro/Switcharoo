@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Switcharoo.Interfaces;
 using Switcharoo.Model;
 
@@ -11,6 +12,7 @@ public sealed record DeleteFeatureRequest(Guid FeatureKey, Guid AuthKey);
 public sealed record DeleteEnvironmentFromFeatureRequest(Guid FeatureKey, Guid EnvironmentKey, Guid AuthKey);
 
 [ApiController]
+[Authorize]
 [Route("[controller]")]
 public sealed class FeatureController(IFeatureProvider featureProvider) : ControllerBase
 {

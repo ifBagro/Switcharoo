@@ -1,13 +1,28 @@
-using System.Data;
-using Microsoft.Data.Sqlite;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Switcharoo;
+using Switcharoo.Database;
+using Switcharoo.Entities;
 using Switcharoo.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddTransient<IDbConnection>(_ => new SqliteConnection(builder.Configuration.GetConnectionString("SwitcharooDb")));
+builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
+builder.Services.AddAuthorizationBuilder();
+
+builder.Services.AddDbContext<SwitcharooContext>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("SwitcharooDb"));
+});
+
+builder.Services.AddIdentityCore<User>()
+    .AddEntityFrameworkStores<SwitcharooContext>()
+    .AddApiEndpoints();
+
+// builder.Services.AddTransient<IDbConnection>(_ => new SqliteConnection(builder.Configuration.GetConnectionString("SwitcharooDb")));
 builder.Services.AddScoped<IFeatureProvider, FeatureProvider>();
-builder.Services.AddScoped<IRepository, FeatureRepository>();
+// builder.Services.AddScoped<IRepository, FeatureRepository>();
+builder.Services.AddScoped<IRepository, EfRepository>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -31,7 +46,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.VerifyDatabase(app.Services.GetRequiredService<IDbConnection>());
+app.MapIdentityApi<User>();
+
+// app.VerifyDatabase(app.Services.GetRequiredService<IDbConnection>());
 
 app.MapControllers();
 
